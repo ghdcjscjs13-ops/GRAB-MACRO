@@ -89,17 +89,50 @@
         .warning li {
             margin-bottom: 6px;
         }
+        /* 카카오톡 안내 */
+        .kakao-alert {
+            display: none;
+            background: #FEE500;
+            color: #000;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .kakao-alert b {
+            color: #3C1E1E;
+        }
+        .kakao-btn {
+            display: inline-block;
+            background: #3C1E1E;
+            color: #FEE500;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 12px;
+        }
     </style>
 </head>
 <body>
     <div class="card">
+        <!-- 카카오톡 인앱 브라우저 감지 시 표시 -->
+        <div class="kakao-alert" id="kakaoAlert">
+            <b>📢 카카오톡에서 열렸습니다!</b><br><br>
+            아래 버튼을 눌러<br><b>외부 브라우저</b>로 열어주세요
+            <br>
+            <a class="kakao-btn" id="openExternal">🌐 외부 브라우저로 열기</a>
+        </div>
+
         <div class="logo">
             <img src="grab-icon.png">
         </div>
         <h1>GRAB</h1>
         <p class="version">v1.3</p>
         
-        <a class="btn" href="https://github.com/ghdcjscjs13-ops/GRAB-MACRO/releases/download/v1.0.0/Grab.apk">
+        <a class="btn" href="https://github.com/ghdcjscjs13-ops/GRAB-MACRO/releases/download/v1.0.0/Grab.apk" id="downloadBtn">
             📥 다운로드
         </a>
         
@@ -127,5 +160,31 @@
             </ol>
         </div>
     </div>
+
+    <script>
+        (function() {
+            var userAgent = navigator.userAgent.toLowerCase();
+            var isKakao = userAgent.indexOf('kakaotalk') > -1;
+            var currentUrl = window.location.href;
+            
+            if (isKakao) {
+                // 카카오톡 인앱 브라우저 감지됨
+                document.getElementById('kakaoAlert').style.display = 'block';
+                
+                // 외부 브라우저 열기 버튼
+                document.getElementById('openExternal').addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // 안드로이드 intent로 외부 브라우저 열기
+                    location.href = 'intent://' + currentUrl.replace(/https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
+                });
+                
+                // 다운로드 버튼 클릭 시에도 외부 브라우저 유도
+                document.getElementById('downloadBtn').addEventListener('click', function(e) {
+                    e.preventDefault();
+                    alert('외부 브라우저에서 다운로드해주세요!\n\n위의 노란 버튼을 눌러주세요.');
+                });
+            }
+        })();
+    </script>
 </body>
 </html>
