@@ -216,7 +216,33 @@
             </div>
         </div>
     </div>
-
+<!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyB2dHytveN1FfClpSPB7dIhox89qYLX-Dw",
+            authDomain: "grab-macro.firebaseapp.com",
+            projectId: "grab-macro",
+            storageBucket: "grab-macro.firebasestorage.app",
+            messagingSenderId: "1086536059946",
+            appId: "1:1086536059946:web:3a9379181676991fc18753"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        
+        db.collection('app_config').doc('android').get()
+            .then(doc => {
+                if (doc.exists) {
+                    const version = doc.data().latest_version;
+                    document.getElementById('appVersion').textContent = 'v' + version;
+                }
+            })
+            .catch(err => {
+                document.getElementById('appVersion').textContent = 'v1.0';
+            });
+    </script>
     <script>
         (function() {
             var userAgent = navigator.userAgent.toLowerCase();
