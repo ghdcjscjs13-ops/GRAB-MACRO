@@ -146,6 +146,45 @@
     background: rgba(76, 175, 80, 0.1);
     transform: scale(0.98);
 }
+        /* 추천 코드 박스 */
+.ref-code-box {
+    background: linear-gradient(135deg, rgba(49, 130, 246, 0.1) 0%, rgba(49, 130, 246, 0.05) 100%);
+    border: 1px solid rgba(49, 130, 246, 0.3);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.ref-code-title {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 12px;
+}
+
+.ref-code-value {
+    font-size: 24px;
+    font-weight: 900;
+    color: #3182F6;
+    letter-spacing: 3px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 12px 20px;
+    border-radius: 10px;
+    display: inline-block;
+    font-family: monospace;
+}
+
+.ref-code-copied {
+    font-size: 12px;
+    color: #4CAF50;
+    margin-top: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.ref-code-copied.show {
+    opacity: 1;
+}
 
         .download-icon {
             margin-right: 8px;
@@ -344,9 +383,16 @@
                     <span class="version" id="appVersion">버전 확인 중...</span>
                 </div>
 
-                <a class="download-btn fade-in fade-in-delay-2" href="https://github.com/ghdcjscjs13-ops/GRAB-MACRO/releases/download/v1.0.0/Grab.apk">
+                <a class="download-btn fade-in fade-in-delay-2" id="downloadBtn" href="https://github.com/ghdcjscjs13-ops/GRAB-MACRO/releases/download/v1.0.0/Grab.apk">
     <span class="download-icon">📥</span> 다운로드
 </a>
+
+<!-- ★ 추천 코드 표시 영역 (ref 있을 때만 보임) -->
+<div class="ref-code-box fade-in fade-in-delay-2" id="refCodeBox" style="display: none;">
+    <div class="ref-code-title">📌 앱 첫 실행 시 아래 코드가 자동 입력됩니다</div>
+    <div class="ref-code-value" id="refCodeValue">XXXXXXXX</div>
+    <div class="ref-code-copied" id="refCodeCopied">✅ 코드가 복사되었습니다!</div>
+</div>
 
 <a class="guide-btn fade-in fade-in-delay-2" href="https://ghdcjscjs13-ops.github.io/grab-install/">
     📲 설치 전 필수 설정 보기
@@ -452,5 +498,51 @@
             }
         })();
     </script>
+    <script>
+    // ★ 추천 코드 처리
+    (function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const refCode = urlParams.get('ref');
+        
+        if (refCode && refCode.match(/^[A-Za-z0-9]{8}$/)) {
+            // 코드 박스 표시
+            document.getElementById('refCodeBox').style.display = 'block';
+            document.getElementById('refCodeValue').textContent = refCode.toUpperCase();
+            
+            // 다운로드 버튼 클릭 시 클립보드 복사
+            document.getElementById('downloadBtn').addEventListener('click', function() {
+                const code = refCode.toUpperCase();
+                
+                // 클립보드 복사
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(code).then(function() {
+                        document.getElementById('refCodeCopied').classList.add('show');
+                    }).catch(function() {
+                        fallbackCopy(code);
+                    });
+                } else {
+                    fallbackCopy(code);
+                }
+            });
+        }
+        
+        // 클립보드 복사 폴백
+        function fallbackCopy(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                document.getElementById('refCodeCopied').classList.add('show');
+            } catch (e) {
+                console.error('복사 실패:', e);
+            }
+            document.body.removeChild(textarea);
+        }
+    })();
+</script>
 </body>
 </html>
